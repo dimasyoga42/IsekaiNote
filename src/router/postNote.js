@@ -2,6 +2,8 @@ import express from "express"
 import dotenv from "dotenv"
 import { PrismaClient } from "@prisma/client"
 import protection from "../middleware/protectionUser.js"
+import { errorResponse, successResponse } from "../utils/respon.js"
+// import { condition } from "../utils/condition.js"
 dotenv.config()
 const prisma = new PrismaClient()
 //post delete update
@@ -18,7 +20,7 @@ notePost.post("/post", protection, async (req, res) => {
             userID: user.id
         }
     })
-    res.status(200).json({message: "catatan berhasil di buat", getNote})
+    successResponse(res, "data berhasil dibuat")
 })
 
 notePost.delete("/delete", protection, async (req, res) => {
@@ -30,9 +32,10 @@ notePost.delete("/delete", protection, async (req, res) => {
         const dataDelete = await prisma.data.delete({
             id: id
         })
-        res.status(200).json({message: "data berhasil di hapus"})        
+        successResponse(res, "catatan berhasil di hapus")      
     } catch (Error) {
         console.error({err: Error})
+        errorResponse(res, "terjadi kesalahan mohon cek kembali,", 500)
     }
 
 })

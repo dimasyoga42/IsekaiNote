@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import Cookies from "js-cookie";
+import { errorResponse, successResponse } from "../src/utils/respon.js";
 dotenv.config();
 
 const prisma = new PrismaClient();
@@ -12,7 +13,7 @@ const authentication = async (req, res, next) => {
         const { username, password } = req.body;
 
         if (!username || !password) {
-            return res.status(400).json({ message: "Username dan password wajib diisi" });
+            return errorResponse(res, "username & password harus di isi", 400)
         }
 
         const user = await prisma.user.findUnique({
@@ -22,7 +23,7 @@ const authentication = async (req, res, next) => {
         if (!user) return res.status(401).json({ message: "Username atau password salah" });
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) return res.status(401).json({ message: "Username atau password salah" });
+        if (!isPasswordValid) return errorResponse(res, "password yang anda masukan sepertinya salah", 402)
         
         const token = jwt.sign(
             { id: user.id, username: user.username },
@@ -36,11 +37,11 @@ const authentication = async (req, res, next) => {
             secure: process.env.NODE_ENV === "production", 
             maxAge: 3600 * 1000, 
         });
-        return res.status(200).json({ message: "Berhasil login", token });
+        return successResponse(res, "anda berhasil login", token)
         
     } catch (error) {
         console.error("Error saat autentikasi:", error);
-        return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+        return errorResponse(res, "terjadi kesalahan mohon cek kembali", 500)
     } finally {
         next();
     }

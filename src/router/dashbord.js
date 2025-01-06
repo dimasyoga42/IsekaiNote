@@ -1,6 +1,7 @@
 import express from "express";
 import protection from "../middleware/protectionUser.js";
 import { PrismaClient } from "@prisma/client";
+import { successResponse } from "../utils/respon.js";
 const prisma = new PrismaClient();
 const dashboard = express.Router();
 
@@ -17,7 +18,7 @@ dashboard.get("/profil", protection, async (req, res) => {
         username: data.username,
         note: data.data
     }
-    res.json({ message: `Selamat datang di profil, ${user.username}`, profile: schema });
+    successResponse(res, "selamat datang, di profil", schema)
 
 });
 //fitur cari profil
@@ -32,7 +33,6 @@ dashboard.post("/search", protection, async (req, res) => {
             uid: user.id,
             note: user.data
         }
-        res.status(200).json({ data: resSearch
-    })
+       successResponse(res, "hasil pencarian anda", resSearch)
 })
 export default dashboard;

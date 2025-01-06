@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client"
 import bycrypt from "bcrypt"
 import authtentcation from "../../controller/authtentication.js"
 import authMiddle from "../middleware/authMiddle.js"
+import { successResponse } from "../utils/respon.js"
 const auth = express.Router()
 const prisma = new PrismaClient()
 //register 
@@ -16,7 +17,7 @@ auth.post("/register", authMiddle, async (req, res) => {
         password: decodedPassword,
     }
         })
-        res.status(200).json({message: "register berhasil"})
+        successResponse(res, "user berhasil di registerasi ")
     } catch (error) {
         
     }
